@@ -1,7 +1,8 @@
+
 import pygame
 from camera import Camera
 from entity_setup import make_entity
-from environment import load_tree_sprite
+from environment import TreeManager
 from shared import game
 
 
@@ -17,7 +18,9 @@ def main():
     speed = 2000.0
 
     entities = [make_entity(game.world_size) for _ in range(1500)]
-    load_tree_sprite()
+
+    tree_manager = TreeManager()
+    tree_manager.init_tree_spawn(game.world_size) # Spawns 700 trees in the world
 
     running = True
     while running:
@@ -49,7 +52,20 @@ def main():
             e.update(dt, game.world_size)
 
         # --- Draw ---
-        screen.fill("purple")
+        screen.fill("brown")
+        for tree in tree_manager.trees:
+            sx, sy = cam.world_to_screen(tree.pos.x, tree.pos.y)
+            w = int(tree.surface.get_width() * cam.zoom)
+            h = int(tree.surface.get_height() * cam.zoom)
+            # Simple culling: Only draw if it's roughly on screen
+            if -w < sx < cam.screen_w + w and -h < sy < cam.screen_h + h:
+                # Scale the surface
+                scaled_tree = pygame.transform.scale(tree.surface, (w, h))
+                # Get the rect and center it at the screen position
+                tree_rect = scaled_tree.get_rect(center=(sx, sy))
+
+                screen.blit(scaled_tree, tree_rect)
+
         for e in entities:
             e.draw(screen, cam)
         pygame.display.flip()
