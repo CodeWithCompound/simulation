@@ -10,7 +10,7 @@ class Entity:
     pos: Vec2
     color: str
     verlocity: Vec2
-    radius: float = 7
+    radius: float
 
     def draw(self, screen, cam):
         sx, sy = cam.world_to_screen(self.pos.x, self.pos.y)
@@ -48,5 +48,6 @@ def make_entity(world_size):
                  random.uniform(0, world_size.y)),
         verlocity=Vec2(random.uniform(-100, 100),
                        random.uniform(-100, 100)),
+        radius=7,
         color=random.choice(COLORS),
     )
